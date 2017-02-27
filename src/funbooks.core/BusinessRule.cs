@@ -45,7 +45,7 @@ namespace Funbooks.Core
         public void Apply(IPOModifier purchaseOrder)
         {
             actions.ForEach(x => {
-                if (x.Contains("membership activate Books"))
+                if (x.Contains("membership activate books"))
                 {
                     purchaseOrder.AddMembership(MembershipType.Books);
                 }
