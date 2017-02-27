@@ -13,19 +13,30 @@ namespace Funbooks.Core
         {
             var lines = ruleInString.Split('\n');
             var br =  new BusinessRule();
+            var selection = ExtractRules(lines);
+            br.rules.AddRange(selection);
+
+            selection = ExtractActions(lines);
+            br.actions.AddRange(selection);
+            return br;
+        }
+
+        private static IEnumerable<string> ExtractActions(IEnumerable<string> lines)
+        {
+            var selection = lines.SkipWhile(x => !x.Contains("action:"));
+            selection = selection.Skip(1);
+            selection = selection.Select(x => x.Replace("    - ", ""));
+            return selection;
+        }
+
+        private static IEnumerable<string> ExtractRules(IEnumerable<string> lines)
+        {
             var selection = lines.SkipWhile(x => !x.Contains("rules:"));
             selection = selection.Skip(1);
             selection = selection.TakeWhile(x => !x.Contains("actions:"));
             selection = selection.Select(x => x.Replace("    - ", ""));
-            br.rules.AddRange(selection);
-
-            var selection2 = lines.SkipWhile(x => !x.Contains("action:"));
-            selection2 = selection2.Skip(1);
-            selection2 = selection2.Select(x => x.Replace("    - ", ""));
-            br.actions.AddRange(selection2);
-            return br;
+            return selection;
         }
-
         public bool ShouldApply(IPOReader purchaseOrder)
         {
             return rules.All(purchaseOrder.Request.Contains);
@@ -38,8 +49,7 @@ namespace Funbooks.Core
                 {
                     purchaseOrder.AddMembership(MembershipType.Books);
                 }
-            }
-            );
+            });
         }
     }
 }
