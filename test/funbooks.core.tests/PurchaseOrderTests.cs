@@ -2,7 +2,6 @@
 using System.Linq;
 using Xunit;
 using Funbooks.Interfaces;
-using Funbooks.Core;
 using Moq;
 
 namespace Funbooks.Core.Tests
@@ -11,26 +10,46 @@ namespace Funbooks.Core.Tests
     {
         [Theory]
         [MemberData(nameof(ListOfRules))]
-        public void BusinessRulesShouldBeCalledWhenProcessingPO(List<Mock<IBusinessRule>> rulesToApply) 
+        public void BusinessRulesShouldBeCheckedWhenProcessingPO(List<Mock<IBusinessRule>> rulesToApply) 
         {
-            var order = new PurchaseOrder();
+            var order = new PurchaseOrder(string.Empty);
             order.AddRules(rulesToApply.Select(x => x.Object).ToList());
             order.Process();
-            rulesToApply.ForEach(x => x.Verify(y => y.ShouldApply()));
+            rulesToApply.ForEach(x => x.Verify(y => y.ShouldApply(order)));
         }
 
-        public static IEnumerable<object []> ListOfRules
+        [Fact]
+        public void BusinessRulesShouldBeAppliedOnlyWhenTheCheckIsTrue() 
         {
-            get {
-                yield return new object[] { new List<Mock<IBusinessRule>>()};
-                yield return new object[] { new List<Mock<IBusinessRule>> {new Mock<IBusinessRule>()}};
-                yield return new object[] { 
-                    new List<Mock<IBusinessRule>> {
-                        new Mock<IBusinessRule>(),
-                        new Mock<IBusinessRule>(),
-                        new Mock<IBusinessRule>()
-                        }};
-            }
+            var counter = 0;
+            var brTrue = new Mock<IBusinessRule>();
+            brTrue.Setup(x => x.ShouldApply(It.IsAny<IPOReader>())).Returns(true);
+            brTrue.Setup(x => x.Apply(It.IsAny<IPOModifier>())).Callback(() => counter++);
+            var brFalse = new Mock<IBusinessRule>();
+            brFalse.Setup(x => x.ShouldApply(It.IsAny<IPOReader>())).Returns(false);
+            var rulesToApply =  new List<Mock<IBusinessRule>> {
+                    brTrue,
+                    brFalse,
+                    brTrue
+                };
+
+            var order = new PurchaseOrder(string.Empty);
+            order.AddRules(rulesToApply.Select(x => x.Object).ToList());
+            order.Process();
+            Assert.Equal(2, counter);
+        }
+
+        public static IEnumerable<object []> ListOfRules ()
+        {
+            yield return new object[] { new List<Mock<IBusinessRule>>()};
+            yield return new object[] { new List<Mock<IBusinessRule>> {new Mock<IBusinessRule>()}};
+            yield return new object[] { 
+                new List<Mock<IBusinessRule>> {
+                    new Mock<IBusinessRule>(),
+                    new Mock<IBusinessRule>(),
+                    new Mock<IBusinessRule>()
+                }
+            };
         }
     }
 }
