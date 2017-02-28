@@ -39,7 +39,7 @@ namespace Funbooks.Core
         }
         public bool ShouldApply(IPOReader purchaseOrder)
         {
-            return rules.All(purchaseOrder.Request.Contains);
+            return rules.All(x => purchaseOrder.Request.Any(y => y.Contains(x)));
         }
 
         public void Apply(IPOModifier purchaseOrder)

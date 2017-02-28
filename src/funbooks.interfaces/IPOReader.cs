@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace Funbooks.Interfaces
 {
     public interface IPOReader
     {
-        string Request {get;}   
+        IEnumerable<string> Request {get;}   
     }
 }  

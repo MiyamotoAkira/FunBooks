@@ -9,10 +9,10 @@ namespace Funbooks.Core
         List<string> books = new List<string>();
         List<string> videos = new List<string>();
 
-        public string Request {get; private set;}
+        public IEnumerable<string> Request {get; private set;}
         public PurchaseOrder(string request)
         {
-            Request = request;
+            Request = request.Split('\n');
             Books = books;
             Video = videos;
         }

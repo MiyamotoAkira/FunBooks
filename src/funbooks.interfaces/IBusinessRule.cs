@@ -1,8 +1,7 @@
 ﻿namespace Funbooks.Interfaces
 {
-    public interface IBusinessRule
+    public interface IBusinessRule : IRuleChecker
     {
-        bool ShouldApply(IPOReader purchaseOrder);
         void Apply(IPOModifier purchaseOrder);
     }
 }
