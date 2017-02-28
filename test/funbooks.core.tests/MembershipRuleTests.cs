@@ -8,7 +8,7 @@ namespace Funbooks.Core.Tests
     public class MembershipRuleTests
     {
         [Fact]
-        public void BusinessRule1ShouldApplyIsTrueWhenPOContainsRule()
+        public void RuleShouldApplyIsTrueWhenPOContainsRule()
         {
             var ipoReader = new Mock<IPOReader>();
             ipoReader.Setup(x => x.Request).Returns(new List<string> {"membership request books"});
