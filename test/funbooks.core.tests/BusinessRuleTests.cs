@@ -137,9 +137,7 @@ namespace Funbooks.Core.Tests
         public const string BusinessRule3 = @"
         name: BR3
         rules:
-            - or:
-                - book
-                - video
+            - physical product
         actions:
             - create shipping slip
         ";
