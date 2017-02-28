@@ -70,6 +70,46 @@ namespace Funbooks.Core.Tests
             Assert.True(actual);
         }
 
+        [Fact]
+        public void BusinessRule2ShouldApplyIsTrueWhenPOContainsRule()
+        {
+            var ipoReader = new Mock<IPOReader>();
+            ipoReader.Setup(x => x.Request).Returns("membership upgrade");
+            var rule = BusinessRule.LoadFromString(BusinessRule2);
+            var actual = rule.ShouldApply(ipoReader.Object);
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void BusinessRule3ShouldApplyIsTrueWhenPOContainsRule()
+        {
+            var ipoReader = new Mock<IPOReader>();
+            ipoReader.Setup(x => x.Request).Returns("video comprehensive first aid training");
+            var rule = BusinessRule.LoadFromString(BusinessRule3);
+            var actual = rule.ShouldApply(ipoReader.Object);
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void BusinessRule4ShouldApplyIsTrueWhenPOContainsRule()
+        {
+            var ipoReader = new Mock<IPOReader>();
+            ipoReader.Setup(x => x.Request).Returns("video comprehensive first aid training");
+            var rule = BusinessRule.LoadFromString(BusinessRule4);
+            var actual = rule.ShouldApply(ipoReader.Object);
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void BusinessRule5ShouldApplyIsTrueWhenPOContainsRule()
+        {
+            var ipoReader = new Mock<IPOReader>();
+            ipoReader.Setup(x => x.Request).Returns("referer");
+            var rule = BusinessRule.LoadFromString(BusinessRule5);
+            var actual = rule.ShouldApply(ipoReader.Object);
+            Assert.True(actual);
+        }
+
         public static IEnumerable<object []> Rules
         {
             get 
