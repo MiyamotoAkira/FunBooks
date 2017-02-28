@@ -6,7 +6,7 @@ namespace Funbooks.Interfaces
         IPOModifier UpgradeMembership();
         IPOModifier CreateShippingSlip();
         IPOModifier GenerateCommission();
-        IPOModifier AddBook();
-        IPOModifier AddVideo();
+        IPOModifier AddBook(string title);
+        IPOModifier AddVideo(string title);
     }
 }  

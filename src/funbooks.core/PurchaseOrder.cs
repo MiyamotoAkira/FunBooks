@@ -3,15 +3,23 @@ using Funbooks.Interfaces;
 
 namespace Funbooks.Core
 {
-    public class PurchaseOrder: IPOModifier, IPOReader
+    public class PurchaseOrder: IPOModifier, IPOReader, IOrder
     {
         List<IBusinessRule> rules = new List<IBusinessRule>();
+        List<string> books = new List<string>();
+        List<string> videos = new List<string>();
 
         public string Request {get; private set;}
         public PurchaseOrder(string request)
         {
             Request = request;
+            Books = books;
+            Video = videos;
         }
+
+        public IEnumerable<string> Books {get; private set;}
+
+        public IEnumerable<string> Video {get; private set;}
 
         public void AddRules(List<IBusinessRule> rulesToAdd)
         {
@@ -49,13 +57,15 @@ namespace Funbooks.Core
             return this;
         }
 
-        public IPOModifier AddBook()
+        public IPOModifier AddBook(string title)
         {
+            books.Add(title);
             return this;
         }
 
-        public IPOModifier AddVideo()
+        public IPOModifier AddVideo(string title)
         {
+            videos.Add(title);
             return this;
         }
     }

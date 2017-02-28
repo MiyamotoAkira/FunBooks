@@ -23,9 +23,9 @@ namespace Funbooks.Core
 
         private static IEnumerable<string> ExtractActions(IEnumerable<string> lines)
         {
-            var selection = lines.SkipWhile(x => !x.Contains("action:"));
+            var selection = lines.SkipWhile(x => !x.Contains("actions:"));
             selection = selection.Skip(1);
-            selection = selection.Select(x => x.Replace("    - ", ""));
+            selection = selection.Select(x => x.Trim().Replace("- ", ""));
             return selection;
         }
 
@@ -34,7 +34,7 @@ namespace Funbooks.Core
             var selection = lines.SkipWhile(x => !x.Contains("rules:"));
             selection = selection.Skip(1);
             selection = selection.TakeWhile(x => !x.Contains("actions:"));
-            selection = selection.Select(x => x.Replace("    - ", ""));
+            selection = selection.Select(x => x.Trim().Replace("- ", ""));
             return selection;
         }
         public bool ShouldApply(IPOReader purchaseOrder)
@@ -48,6 +48,22 @@ namespace Funbooks.Core
                 if (x.Contains("membership activate books"))
                 {
                     purchaseOrder.AddMembership(MembershipType.Books);
+                }
+                else if (x.Contains("add video"))
+                {
+                    purchaseOrder.AddVideo(x.Replace("add video", "").Trim());
+                }
+                else if (x.Contains("membership activate upgrade"))
+                {
+                    purchaseOrder.UpgradeMembership();
+                }
+                else if (x.Contains("create shipping slip"))
+                {
+                    purchaseOrder.CreateShippingSlip();
+                }
+                else if (x.Contains("generate comission"))
+                {
+                    purchaseOrder.GenerateCommission();
                 }
             });
         }

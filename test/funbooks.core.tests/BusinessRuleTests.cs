@@ -25,6 +25,42 @@ namespace Funbooks.Core.Tests
         }
 
         [Fact]
+        public void BusinessRule2ExecutesUpgradeMembership()
+        {
+            var ipoModifier = new Mock<IPOModifier>();
+            var rule = BusinessRule.LoadFromString(BusinessRule2);
+            rule.Apply(ipoModifier.Object);
+            ipoModifier.Verify(x => x.UpgradeMembership());
+        }
+
+        [Fact]
+        public void BusinessRule3ExecutesCreateShippingSlip()
+        {
+            var ipoModifier = new Mock<IPOModifier>();
+            var rule = BusinessRule.LoadFromString(BusinessRule3);
+            rule.Apply(ipoModifier.Object);
+            ipoModifier.Verify(x => x.CreateShippingSlip());
+        }
+
+        [Fact]
+        public void BusinessRule4ExecutesAddVideo()
+        {
+            var ipoModifier = new Mock<IPOModifier>();
+            var rule = BusinessRule.LoadFromString(BusinessRule4);
+            rule.Apply(ipoModifier.Object);
+            ipoModifier.Verify(x => x.AddVideo("comprehensive first aid training"));
+        }
+
+        [Fact]
+        public void BusinessRule5ExecutesMembershipActivate()
+        {
+            var ipoModifier = new Mock<IPOModifier>();
+            var rule = BusinessRule.LoadFromString(BusinessRule5);
+            rule.Apply(ipoModifier.Object);
+            ipoModifier.Verify(x => x.GenerateCommission());
+        }
+
+        [Fact]
         public void BusinessRule1ShouldApplyIsTrueWhenPOContainsRule()
         {
             var ipoReader = new Mock<IPOReader>();
@@ -44,43 +80,43 @@ namespace Funbooks.Core.Tests
 
         public const string BusinessRule1 = @"
         name: BR1
-        rule:
+        rules:
             - membership request books
-        action:
+        actions:
             - membership activate books
         ";
 
         public const string BusinessRule2 = @"
         name: BR2
-        rule:
+        rules:
             - membership upgrade
-        action:
+        actions:
             - membership activate upgrade
         ";
 
         public const string BusinessRule3 = @"
         name: BR3
-        rule:
+        rules:
             - or:
                 - book
                 - video
-        action:
+        actions:
             - create shipping slip
         ";
 
         public const string BusinessRule4 = @"
         name: BR4
-        rule:
+        rules:
             - video comprehensive first aid training
-        action:
+        actions:
             - add video comprehensive first aid training
         ";
 
         public const string BusinessRule5 = @"
         name: BR5
-        rule:
+        rules:
             - referer
-        action:
+        actions:
             - generate comission
         ";
     }
