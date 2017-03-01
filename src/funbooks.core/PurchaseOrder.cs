@@ -3,7 +3,7 @@ using Funbooks.Interfaces;
 
 namespace Funbooks.Core
 {
-    public class PurchaseOrder: IPOModifier, IPOReader, IOrder
+    public class PurchaseOrder: IPOModifier, IPOReader, IOrder, ISlipUser
     {
         List<IBusinessRule> rules = new List<IBusinessRule>();
         List<string> books = new List<string>();
@@ -49,6 +49,7 @@ namespace Funbooks.Core
 
         public IPOModifier CreateShippingSlip()
         {
+            Slip = new ShippingSlip();
             return this;
         }
 
@@ -68,5 +69,7 @@ namespace Funbooks.Core
             videos.Add(title);
             return this;
         }
+
+        public ShippingSlip Slip {get; private set;}
     }
 }

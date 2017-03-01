@@ -68,5 +68,12 @@ namespace Funbooks.Core.Tests
             Assert.Equal(1,purchaseOrder.Video.Count());
         }
 
+        [Fact]
+        public void CreateShippingSlip()
+        {
+            var purchaseOrder = new PurchaseOrder(string.Empty);
+            purchaseOrder.CreateShippingSlip();
+            Assert.NotNull(purchaseOrder.Slip);
+        }
     }
 }
