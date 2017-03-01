@@ -3,7 +3,7 @@ using Xunit;
 using Moq;
 using Funbooks.Interfaces;
 
-namespace Funbooks.Core.Tests
+namespace Funbooks.Core.Rules.Tests
 {
     public class PhysicalProductRuleTests
     {

@@ -1,7 +1,7 @@
 using Funbooks.Interfaces;
 using System.Linq;
 
-namespace Funbooks.Core
+namespace Funbooks.Core.Rules
 {
     public class MembershipRule: IRuleChecker
     {

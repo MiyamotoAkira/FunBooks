@@ -3,7 +3,7 @@ using Funbooks.Interfaces;
 using Moq;
 using System.Collections.Generic;
 
-namespace Funbooks.Core.Tests
+namespace Funbooks.Core.Rules.Tests
 {
     public class MembershipRuleTests
     {

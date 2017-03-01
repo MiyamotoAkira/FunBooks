@@ -1,7 +1,7 @@
 using System.Linq;
 using Funbooks.Interfaces;
 
-namespace Funbooks.Core
+namespace Funbooks.Core.Rules
 {
     public class RefererRule :IRuleChecker
     {
