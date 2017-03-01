@@ -115,6 +115,10 @@ namespace Funbooks.Core.Tests
             get 
             {
                 yield return new object [] {BusinessRule1};
+                yield return new object [] {BusinessRule2};
+                yield return new object [] {BusinessRule3};
+                yield return new object [] {BusinessRule4};
+                yield return new object [] {BusinessRule5};
             }
         }
 

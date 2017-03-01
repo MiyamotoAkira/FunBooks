@@ -51,5 +51,22 @@ namespace Funbooks.Core.Tests
                 }
             };
         }
+
+        [Fact]
+        public void AddBook()
+        {
+            var purchaseOrder = new PurchaseOrder(string.Empty);
+            purchaseOrder.AddBook("title");
+            Assert.Equal(1,purchaseOrder.Books.Count());
+        }
+
+        [Fact]
+        public void AddVideo()
+        {
+            var purchaseOrder = new PurchaseOrder(string.Empty);
+            purchaseOrder.AddVideo("title");
+            Assert.Equal(1,purchaseOrder.Video.Count());
+        }
+
     }
 }

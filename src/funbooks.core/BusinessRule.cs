@@ -1,22 +1,24 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using Funbooks.Interfaces;
+using Funbooks.Core.Rules;
 
 namespace Funbooks.Core
 {
     public class BusinessRule: IBusinessRule
     {
-        private List<string> rules = new List<string>();
+        private List<IRuleChecker> rules = new List<IRuleChecker>();
         private List<string> actions = new List<string>();
 
         public static BusinessRule LoadFromString(string ruleInString)
         {
             var lines = ruleInString.Split('\n');
             var br =  new BusinessRule();
-            var selection = ExtractRules(lines);
-            br.rules.AddRange(selection);
+            var ruleSelection = ExtractRules(lines);
+            br.rules.AddRange(ruleSelection);
 
-            selection = ExtractActions(lines);
+            var selection = ExtractActions(lines);
             br.actions.AddRange(selection);
             return br;
         }
@@ -29,7 +31,46 @@ namespace Funbooks.Core
             return selection;
         }
 
-        private static IEnumerable<string> ExtractRules(IEnumerable<string> lines)
+        private static IEnumerable<IRuleChecker> ExtractRules(IEnumerable<string> lines)
+        {
+            var extracted = ExtractLines(lines);
+
+            var selection = extracted.Select<string, IRuleChecker>(x => 
+            {
+                if (x.StartsWith("membership upgrade"))
+                {
+                    return new UpgradeRule();
+                }
+                else if (x.StartsWith("membership request"))
+                {
+                    var extractedType = x.Replace("membership request", "").Trim();
+                    extractedType = extractedType.Substring(0,1).ToUpper() + extractedType.Substring(1, extractedType.Length - 1);
+                    var membershipType = (MembershipType)Enum.Parse(typeof(MembershipType), extractedType);
+                    return new MembershipRule(membershipType);
+                }
+                else if (x.StartsWith("referer"))
+                {
+                    return new RefererRule();
+                }
+                else if (x.StartsWith("video"))
+                {
+                    var title = x.Replace("video", "").Trim();
+                    return new ProductOrderedRule("video", title);
+                }
+                else if (x.StartsWith("physical product"))
+                {
+                    return new PhysicalProductRule();
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            });
+
+            return selection;
+        }
+
+        private static IEnumerable<string> ExtractLines(IEnumerable<string> lines)
         {
             var selection = lines.SkipWhile(x => !x.Contains("rules:"));
             selection = selection.Skip(1);
@@ -37,9 +78,10 @@ namespace Funbooks.Core
             selection = selection.Select(x => x.Trim().Replace("- ", ""));
             return selection;
         }
+
         public bool ShouldApply(IPOReader purchaseOrder)
         {
-            return rules.All(x => purchaseOrder.Request.Any(y => y.Contains(x)));
+            return rules.All(x => x.ShouldApply(purchaseOrder));
         }
 
         public void Apply(IPOModifier purchaseOrder)
