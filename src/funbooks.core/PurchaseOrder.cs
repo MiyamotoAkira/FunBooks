@@ -22,6 +22,9 @@ namespace Funbooks.Core
             ProcessRequest();
         }
 
+        // At the moment this method just calls a single method. But the idea is that this
+        // will become some kind of implementation of the builder pattern once we start processing
+        // the whole request of the Purchase Order.
         private void ProcessRequest()
         {
             RetrieveCustomer();
@@ -67,6 +70,7 @@ namespace Funbooks.Core
 
         public IPOModifier UpgradeMembership()
         {
+            customer.UpgradeMembership();
             return this;
         }
 

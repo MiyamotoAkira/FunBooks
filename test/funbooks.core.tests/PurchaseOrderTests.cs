@@ -88,5 +88,16 @@ namespace Funbooks.Core.Tests
             moqPO.AddMembership(MembershipType.Books);
             moqCustomer.Verify(x => x.AddMembership(MembershipType.Books));
         }
+
+        [Fact]
+        public void MembershipUpgrade()
+        {
+            var moqCustomer = new Mock<ICustomer>();
+            var moqCR = new Mock<ICustomerRetriever>();
+            moqCR.Setup(x => x.RetrieveCustomer(It.IsAny<int>())).Returns(moqCustomer.Object);
+            var moqPO = new PurchaseOrder("Customer: 123456", moqCR.Object);    
+            moqPO.UpgradeMembership();
+            moqCustomer.Verify(x => x.UpgradeMembership());
+        }
     }
 }
