@@ -4,7 +4,7 @@ using Funbooks.Interfaces;
 
 namespace Funbooks.Core
 {
-    public class PurchaseOrder: IPOModifier, IPOReader, IOrder, ISlipProvider
+    public class PurchaseOrder: IPOProcessor, IPOModifier, IPOReader, IOrder, ISlipProvider
     {
         List<IBusinessRule> rules = new List<IBusinessRule>();
         List<string> books = new List<string>();
@@ -27,9 +27,6 @@ namespace Funbooks.Core
             ProcessRequest();
         }
 
-        // At the moment this method just calls a single method. But the idea is that this
-        // will become some kind of implementation of the builder pattern once we start processing
-        // the whole request of the Purchase Order.
         private void ProcessRequest()
         {
             RetrieveTotal();
