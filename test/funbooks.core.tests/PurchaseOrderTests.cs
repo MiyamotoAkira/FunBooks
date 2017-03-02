@@ -8,14 +8,20 @@ namespace Funbooks.Core.Tests
 {
     public class PurchaseOrderTests
     {
+        PurchaseOrder basicPO;
+        Mock<ICustomerRetriever> moqCustomerRetriever;
+        public PurchaseOrderTests()
+        {
+            moqCustomerRetriever = new Mock<ICustomerRetriever>();
+            basicPO = new PurchaseOrder(string.Empty, moqCustomerRetriever.Object);    
+        }
         [Theory]
         [MemberData(nameof(ListOfRules))]
         public void BusinessRulesShouldBeCheckedWhenProcessingPO(List<Mock<IBusinessRule>> rulesToApply) 
         {
-            var order = new PurchaseOrder(string.Empty);
-            order.AddRules(rulesToApply.Select(x => x.Object).ToList());
-            order.Process();
-            rulesToApply.ForEach(x => x.Verify(y => y.ShouldApply(order)));
+            basicPO.AddRules(rulesToApply.Select(x => x.Object).ToList());
+            basicPO.Process();
+            rulesToApply.ForEach(x => x.Verify(y => y.ShouldApply(basicPO)));
         }
 
         [Fact]
@@ -33,9 +39,8 @@ namespace Funbooks.Core.Tests
                     brTrue
                 };
 
-            var order = new PurchaseOrder(string.Empty);
-            order.AddRules(rulesToApply.Select(x => x.Object).ToList());
-            order.Process();
+            basicPO.AddRules(rulesToApply.Select(x => x.Object).ToList());
+            basicPO.Process();
             Assert.Equal(2, counter);
         }
 
@@ -55,25 +60,33 @@ namespace Funbooks.Core.Tests
         [Fact]
         public void AddBook()
         {
-            var purchaseOrder = new PurchaseOrder(string.Empty);
-            purchaseOrder.AddBook("title");
-            Assert.Equal(1,purchaseOrder.Books.Count());
+            basicPO.AddBook("title");
+            Assert.Equal(1,basicPO.Books.Count());
         }
 
         [Fact]
         public void AddVideo()
         {
-            var purchaseOrder = new PurchaseOrder(string.Empty);
-            purchaseOrder.AddVideo("title");
-            Assert.Equal(1,purchaseOrder.Video.Count());
+            basicPO.AddVideo("title");
+            Assert.Equal(1, basicPO.Video.Count());
         }
 
         [Fact]
         public void CreateShippingSlip()
         {
-            var purchaseOrder = new PurchaseOrder(string.Empty);
-            purchaseOrder.CreateShippingSlip();
-            Assert.NotNull(purchaseOrder.Slip);
+            basicPO.CreateShippingSlip();
+            Assert.NotNull(basicPO.Slip);
+        }
+
+        [Fact]
+        public void MembershipAdded()
+        {
+            var moqCustomer = new Mock<ICustomer>();
+            var moqCR = new Mock<ICustomerRetriever>();
+            moqCR.Setup(x => x.RetrieveCustomer(It.IsAny<int>())).Returns(moqCustomer.Object);
+            var moqPO = new PurchaseOrder("Customer: 123456", moqCR.Object);    
+            moqPO.AddMembership(MembershipType.Books);
+            moqCustomer.Verify(x => x.AddMembership(MembershipType.Books));
         }
     }
 }

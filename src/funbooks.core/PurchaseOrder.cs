@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Funbooks.Interfaces;
 
 namespace Funbooks.Core
@@ -8,13 +9,34 @@ namespace Funbooks.Core
         List<IBusinessRule> rules = new List<IBusinessRule>();
         List<string> books = new List<string>();
         List<string> videos = new List<string>();
+        ICustomerRetriever customerRetriever;
+        ICustomer customer;
 
         public IEnumerable<string> Request {get; private set;}
-        public PurchaseOrder(string request)
+        public PurchaseOrder(string request, ICustomerRetriever customerRetriever)
         {
             Request = request.Split('\n');
             Books = books;
             Video = videos;
+            this.customerRetriever = customerRetriever;
+            ProcessRequest();
+        }
+
+        private void ProcessRequest()
+        {
+            RetrieveCustomer();
+        }
+
+        private void RetrieveCustomer()
+        {
+
+            var requestCustomerId = Request.FirstOrDefault(x => x.StartsWith("Customer:"));
+            if (!string.IsNullOrWhiteSpace(requestCustomerId))
+            {
+                requestCustomerId = requestCustomerId.Replace("Customer:", "").Trim();
+                var customerId = int.Parse(requestCustomerId);
+                customer = customerRetriever.RetrieveCustomer(customerId);
+            }
         }
 
         public IEnumerable<string> Books {get; private set;}
@@ -39,6 +61,7 @@ namespace Funbooks.Core
 
         public IPOModifier AddMembership(MembershipType membershipType)
         {
+            customer.AddMembership(membershipType);
             return this;
         }
 
