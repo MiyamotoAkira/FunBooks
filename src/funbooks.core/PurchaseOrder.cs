@@ -12,13 +12,18 @@ namespace Funbooks.Core
         ICustomerRetriever customerRetriever;
         ICustomer customer;
 
+        IRefererRetriever refererRetriever;
+        IReferer referer;
+        double total;
+
         public IEnumerable<string> Request {get; private set;}
-        public PurchaseOrder(string request, ICustomerRetriever customerRetriever)
+        public PurchaseOrder(string request, ICustomerRetriever customerRetriever, IRefererRetriever refererRetriever)
         {
             Request = request.Split('\n');
             Books = books;
             Video = videos;
             this.customerRetriever = customerRetriever;
+            this.refererRetriever = refererRetriever;
             ProcessRequest();
         }
 
@@ -27,7 +32,19 @@ namespace Funbooks.Core
         // the whole request of the Purchase Order.
         private void ProcessRequest()
         {
+            RetrieveTotal();
             RetrieveCustomer();
+            RetrieveReferer();
+        }
+
+        private void RetrieveTotal()
+        {
+            var requestTotal = Request.FirstOrDefault(x => x.StartsWith("Total:"));
+            if (!string.IsNullOrWhiteSpace(requestTotal))
+            {
+                requestTotal = requestTotal.Replace("Total:", "").Trim();
+                total = int.Parse(requestTotal);
+            }
         }
 
         private void RetrieveCustomer()
@@ -39,6 +56,17 @@ namespace Funbooks.Core
                 requestCustomerId = requestCustomerId.Replace("Customer:", "").Trim();
                 var customerId = int.Parse(requestCustomerId);
                 customer = customerRetriever.RetrieveCustomer(customerId);
+            }
+        }
+
+        private void RetrieveReferer()
+        {
+
+            var refererName = Request.FirstOrDefault(x => x.StartsWith("Referer:"));
+            if (!string.IsNullOrWhiteSpace(refererName))
+            {
+                refererName = refererName.Replace("Referer:", "").Trim();
+                referer = refererRetriever.RetrieveReferer(refererName);
             }
         }
 
@@ -82,6 +110,7 @@ namespace Funbooks.Core
 
         public IPOModifier GenerateCommission()
         {
+            referer.GenerateCommission(total, 5);
             return this;
         }
 

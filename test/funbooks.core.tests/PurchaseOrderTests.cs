@@ -10,10 +10,12 @@ namespace Funbooks.Core.Tests
     {
         PurchaseOrder basicPO;
         Mock<ICustomerRetriever> moqCustomerRetriever;
+        Mock<IRefererRetriever> moqRefererRetriever;
         public PurchaseOrderTests()
         {
             moqCustomerRetriever = new Mock<ICustomerRetriever>();
-            basicPO = new PurchaseOrder(string.Empty, moqCustomerRetriever.Object);    
+            moqRefererRetriever = new Mock<IRefererRetriever>();
+            basicPO = new PurchaseOrder(string.Empty, moqCustomerRetriever.Object, moqRefererRetriever.Object);    
         }
         [Theory]
         [MemberData(nameof(ListOfRules))]
@@ -84,7 +86,7 @@ namespace Funbooks.Core.Tests
             var moqCustomer = new Mock<ICustomer>();
             var moqCR = new Mock<ICustomerRetriever>();
             moqCR.Setup(x => x.RetrieveCustomer(It.IsAny<int>())).Returns(moqCustomer.Object);
-            var moqPO = new PurchaseOrder("Customer: 123456", moqCR.Object);    
+            var moqPO = new PurchaseOrder("Customer: 123456", moqCR.Object, moqRefererRetriever.Object);    
             moqPO.AddMembership(MembershipType.Books);
             moqCustomer.Verify(x => x.AddMembership(MembershipType.Books));
         }
@@ -95,9 +97,20 @@ namespace Funbooks.Core.Tests
             var moqCustomer = new Mock<ICustomer>();
             var moqCR = new Mock<ICustomerRetriever>();
             moqCR.Setup(x => x.RetrieveCustomer(It.IsAny<int>())).Returns(moqCustomer.Object);
-            var moqPO = new PurchaseOrder("Customer: 123456", moqCR.Object);    
+            var moqPO = new PurchaseOrder("Customer: 123456", moqCR.Object, moqRefererRetriever.Object);    
             moqPO.UpgradeMembership();
             moqCustomer.Verify(x => x.UpgradeMembership());
+        }
+
+        [Fact]
+        public void ReferralCommission()
+        {
+            var moqReferer = new Mock<IReferer>();
+            var moqRR = new Mock<IRefererRetriever>();
+            moqRR.Setup(x => x.RetrieveReferer(It.IsAny<string>())).Returns(moqReferer.Object);
+            var moqPO = new PurchaseOrder("Referer: Someone\\nTotal: 54.34", moqCustomerRetriever.Object, moqRR.Object);    
+            moqPO.GenerateCommission();
+            moqReferer.Verify(x => x.GenerateCommission(It.IsAny<double>(), 5));
         }
     }
 }
