@@ -1,6 +1,6 @@
 namespace Funbooks.Interfaces
 {
-    public interface ISlipUser
+    public interface ISlipProvider
     {
         ShippingSlip Slip {get;}
     }

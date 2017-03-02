@@ -3,7 +3,7 @@ using Funbooks.Interfaces;
 
 namespace Funbooks.Core
 {
-    public class PurchaseOrder: IPOModifier, IPOReader, IOrder, ISlipUser
+    public class PurchaseOrder: IPOModifier, IPOReader, IOrder, ISlipProvider
     {
         List<IBusinessRule> rules = new List<IBusinessRule>();
         List<string> books = new List<string>();
